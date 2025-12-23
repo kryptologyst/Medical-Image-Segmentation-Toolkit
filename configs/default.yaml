@@ -1,0 +1,91 @@
+# Default configuration for medical image segmentation
+
+# Model configuration
+model:
+  name: "unet"  # Options: "unet", "unet++"
+  in_channels: 1
+  out_channels: 1
+  base_features: 64
+  dropout_rate: 0.1
+
+# Training configuration
+training:
+  num_epochs: 100
+  batch_size: 8
+  learning_rate: 1e-3
+  weight_decay: 1e-5
+  loss_function: "combined"  # Options: "dice", "bce", "focal", "tversky", "combined"
+  
+  # Loss function parameters
+  dice_weight: 0.5
+  bce_weight: 0.5
+  focal_weight: 0.0
+  tversky_weight: 0.0
+  
+  # Early stopping
+  early_stopping_patience: 10
+  
+  # Checkpointing
+  save_best: true
+  save_last: true
+  checkpoint_dir: "checkpoints"
+
+# Data configuration
+data:
+  # Dataset type: "synthetic" or "medical"
+  dataset_type: "synthetic"
+  
+  # Synthetic dataset parameters
+  synthetic:
+    image_size: [256, 256]
+    num_samples: 1000
+    num_structures: 3
+    noise_level: 0.1
+  
+  # Medical dataset parameters
+  medical:
+    data_dir: "data/images"
+    mask_dir: "data/masks"
+    image_format: "nifti"  # Options: "nifti", "dicom", "png", "jpg"
+    mask_format: "nifti"
+    normalize: true
+    window_level: [400, 50]  # For CT images
+    resize: [256, 256]
+  
+  # Data loading
+  train_split: 0.7
+  val_split: 0.2
+  test_split: 0.1
+  num_workers: 4
+  shuffle_train: true
+
+# Evaluation configuration
+evaluation:
+  threshold: 0.5
+  compute_explainability: true
+  save_predictions: true
+  save_dir: "evaluation_results"
+
+# Device configuration
+device:
+  # Auto-detect device (CUDA -> MPS -> CPU)
+  auto_detect: true
+  # Or specify manually: "cuda", "mps", "cpu"
+  manual_device: null
+
+# Reproducibility
+seed: 42
+deterministic: true
+
+# Logging
+logging:
+  log_interval: 10
+  use_tensorboard: true
+  use_wandb: false
+  wandb_project: "medical-segmentation"
+
+# Demo configuration
+demo:
+  enable_explainability: true
+  default_threshold: 0.5
+  max_file_size_mb: 10
